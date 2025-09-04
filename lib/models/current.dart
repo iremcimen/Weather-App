@@ -24,7 +24,7 @@ class Current {
   final double cloud;
   final String windDirection;
   final double precipMm; //yağış miktarı
-  final double? uv;
+  final double uv;
   final double visionKm; //görüş mesafesi
   final double pressureMb;
   final Condition condition;
