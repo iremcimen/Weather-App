@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:weather_app/models/forecast.dart';
 import 'package:weather_app/models/weather.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:weather_app/widgets/forecastday_bottomSheet.dart';
+import 'package:weather_app/widgets/sliver_two_grids.dart';
+import 'package:weather_app/widgets/weather_sliver_appbar.dart';
 
 class WeatherCityItem extends ConsumerWidget {
   const WeatherCityItem({super.key, required this.weather});
@@ -10,7 +14,28 @@ class WeatherCityItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final current = weather.current;
-    final location = weather.location;
+    final forecast = weather.forecast.forecastday;
+
+    void openForecastDay(ForecastDay fcDay) {
+      showModalBottomSheet(
+        scrollControlDisabledMaxHeightRatio: 0.7,
+        showDragHandle: true,
+        enableDrag: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        backgroundColor: Colors.blue.shade300,
+        useSafeArea: true,
+        elevation: 5,
+        context: context,
+        builder: (context) {
+          return ForecastdayBottomsheet(fcDay: fcDay);
+        },
+      );
+    }
 
     String changeUv() {
       double uv = current.uv.toDouble();
@@ -23,7 +48,7 @@ class WeatherCityItem extends ConsumerWidget {
       }
     }
 
-    final details = [
+    final currentDetails = [
       '${current.feelC.toString()}°C',
       '%${current.humidity.toString().split('.').first}',
       '${current.uv.toString().split('.').first}\n${changeUv()}',
@@ -71,161 +96,86 @@ class WeatherCityItem extends ConsumerWidget {
 
     return CustomScrollView(
       slivers: [
-        SliverAppBar(
-          pinned: true,
-          floating: false,
-          expandedHeight: 180,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          collapsedHeight: 140,
-          elevation: 0,
-          flexibleSpace: LayoutBuilder(
-            builder: (context, constraints) {
-              final percent =
-                  (constraints.maxHeight - kToolbarHeight) /
-                  (180 - kToolbarHeight);
-
-              return Padding(
-                padding: const EdgeInsets.all(10),
-                child: Card(
-                  elevation: 15,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.blue.shade50, Colors.blue.shade100],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          current.condition.icon.startsWith('http')
-                              ? current.condition.icon
-                              : 'https:${current.condition.icon}',
-                          width: 84 * percent.clamp(0.5, 1.0),
-                          height: 84 * percent.clamp(0.5, 1.0),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${current.tempC}°C',
-                                style: Theme.of(context).textTheme.displayMedium
-                                    ?.copyWith(
-                                      fontSize: 36 * percent.clamp(0.5, 1.0),
-                                      color: Colors.blue.shade700,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                location.name,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      fontSize: 20 * percent.clamp(0.5, 1.0),
-                                      color: Colors.blue.shade900,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                current.condition.text,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontSize: 16 * percent.clamp(0.5, 1.0),
-                                      color: Colors.blueGrey.shade700,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.all(10),
-          sliver: SliverGrid(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 10,
-                  ),
+        WeatherSliverAppBar(weather: weather),
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 140,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              scrollDirection: Axis.horizontal,
+              itemCount: forecast.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final fcDay = forecast[index];
+                final iconUrl = fcDay.day.condition.icon.startsWith('http')
+                    ? fcDay.day.condition.icon
+                    : 'https:${fcDay.day.condition.icon}';
+                return Container(
+                  width: 110,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Colors.blue.shade50, Colors.blue.shade100],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      icon[index],
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              currentTitle[index],
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: Colors.blueGrey.shade800,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              details[index],
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(
-                                    color: Colors.blue.shade700,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          ],
-                        ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(15),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                ),
-              ),
-              childCount: details.length,
-            ),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 3 / 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      openForecastDay(fcDay);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            fcDay.date,
+                            style: Theme.of(context).textTheme.bodySmall,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 6),
+                          SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Image.network(
+                              iconUrl,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Icon(
+                                Icons.cloud_outlined,
+                                color: Colors.blue.shade300,
+                                size: 40,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${fcDay.day.maxTempC}° / ${fcDay.day.minTempC}°',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
+        ),
+        SliverTwoGrids(
+          detailsList: currentDetails,
+          titleList: currentTitle,
+          gridCount: 2,
+          iconsList: icon,
         ),
       ],
     );

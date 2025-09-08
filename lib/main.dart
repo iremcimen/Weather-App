@@ -17,6 +17,7 @@ final darkTheme = ThemeData(
   ),
   textTheme: GoogleFonts.latoTextTheme(),
 );
+
 void main() {
   runApp(ProviderScope(child: const MyApp()));
 }

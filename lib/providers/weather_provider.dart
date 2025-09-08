@@ -23,3 +23,5 @@ final fetchCityWeatherProvider = FutureProvider.autoDispose
       final service = ref.watch(weatherServiceProvider);
       return service.fetchWeather(query);
     });
+
+    

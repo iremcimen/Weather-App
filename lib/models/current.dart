@@ -55,6 +55,6 @@ class Condition {
   final String icon;
 
   factory Condition.fromJson(Map<String, dynamic> json) {
-    return Condition(text: json['text'], icon: json['icon']);
+    return Condition(text: json['text'] ?? "", icon: json['icon'] ?? "");
   }
 }

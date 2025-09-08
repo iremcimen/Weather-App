@@ -15,7 +15,7 @@ class _WeathersScreenState extends ConsumerState<WeathersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Weather")),
+      backgroundColor: Colors.blue.shade600,
       body: Stack(
         children: [
           FadeInImage(
