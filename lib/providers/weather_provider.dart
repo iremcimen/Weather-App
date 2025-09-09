@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:weather_app/models/weather.dart';
 import 'package:weather_app/services/weather_services.dart';
 
@@ -24,4 +25,13 @@ final fetchCityWeatherProvider = FutureProvider.autoDispose
       return service.fetchWeather(query);
     });
 
-    
+final weatherProvider = FutureProvider.family<Weather, Position>((
+  ref,
+  position,
+) async {
+  final service = ref.watch(weatherServiceProvider);
+  return await service.fetchWeatherLatLon(
+    position.latitude,
+    position.longitude,
+  );
+});

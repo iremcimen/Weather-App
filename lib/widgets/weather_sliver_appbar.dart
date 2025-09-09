@@ -12,6 +12,7 @@ class WeatherSliverAppBar extends StatelessWidget {
 
     return SliverAppBar(
       pinned: true,
+      automaticallyImplyLeading: false,
       floating: false,
       expandedHeight: 180,
       backgroundColor: Colors.transparent,
@@ -70,7 +71,7 @@ class WeatherSliverAppBar extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            location!.name,
+                            location.name,
                             style: Theme.of(context).textTheme.titleLarge
                                 ?.copyWith(
                                   fontSize: 20 * percent.clamp(0.5, 1.0),

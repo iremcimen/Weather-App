@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:weather_app/models/day.dart';
 import 'package:weather_app/models/forecast.dart';
 import 'package:weather_app/widgets/sliver_one_grid.dart';
 import 'package:weather_app/widgets/sliver_two_grids.dart';
