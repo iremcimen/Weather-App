@@ -7,19 +7,19 @@ class LocationService {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      throw Exception('Konum servisleri kapalı.');
+      throw Exception('Location services are off.');
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        throw Exception('Konum izni reddedildi.');
+        throw Exception('Location permission denied.');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      throw Exception('Konum izinleri kalıcı olarak reddedildi.');
+      throw Exception('Location permissions have been permanently denied.');
     }
 
     return await Geolocator.getCurrentPosition();

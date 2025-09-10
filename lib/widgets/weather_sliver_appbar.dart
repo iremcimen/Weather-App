@@ -48,7 +48,7 @@ class WeatherSliverAppBar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image.network(
-                      current!.condition.icon.startsWith('http')
+                      current.condition.icon.startsWith('http')
                           ? current.condition.icon
                           : 'https:${current.condition.icon}',
                       width: 84 * percent.clamp(0.5, 1.0),

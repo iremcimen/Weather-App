@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:weather_app/models/forecast.dart';
 import 'package:weather_app/widgets/sliver_one_grid.dart';
@@ -11,14 +12,16 @@ class ForecastdayBottomsheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final astro = fcDay.astro;
     final day = fcDay.day;
+    final date = DateTime.parse(fcDay.date);
+    final weekday = DateFormat.EEEE().format(date);
 
     final dayDetails = [
-      day.maxTempC.toString(),
-      day.minTempC.toString(),
+      '${day.maxTempC.toString()}°C',
+      '${day.minTempC.toString()}°C',
       day.uv.toString(),
-      day.avgHumidity.toString(),
-      day.maxWindKph.toString(),
-      day.dailyChanceOfRain.toString(),
+      '%${day.avgHumidity.toString()}',
+      '${day.maxWindKph.toString()} kph',
+      '%${day.dailyChanceOfRain.toString()}',
     ];
     final dayIcons = [
       Icon(Symbols.thermometer, size: 28, color: Colors.blue.shade800),
@@ -57,6 +60,15 @@ class ForecastdayBottomsheet extends StatelessWidget {
     ];
     return CustomScrollView(
       slivers: [
+        SliverToBoxAdapter(
+          child: Center(
+            child: Text(
+              '$weekday, ${fcDay.date}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+        ),
         SliverOneGrid(
           detailsList: sunDetails,
           titleList: sunTitle,

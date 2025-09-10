@@ -15,7 +15,7 @@ class WeatherServices {
       final jsonData = jsonDecode(response.body);
       return Weather.fromJson(jsonData);
     } else {
-      throw Exception("Hava durumu verisi alınamadı");
+      throw Exception("Failed to fetch weather.");
     }
   }
 
@@ -31,7 +31,7 @@ class WeatherServices {
       final jsonData = jsonDecode(response.body);
       return Weather.fromJson(jsonData);
     } else {
-      throw Exception("Hava durumu verisi alınamadı");
+      throw Exception("Failed to fetch weather.");
     }
   }
 }

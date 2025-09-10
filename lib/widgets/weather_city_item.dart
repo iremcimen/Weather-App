@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:weather_app/models/forecast.dart';
 import 'package:weather_app/models/weather.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -94,90 +95,98 @@ class WeatherCityItem extends ConsumerWidget {
       "Pressure",
     ];
 
-    return CustomScrollView(
-      slivers: [
-        WeatherSliverAppBar(weather: weather),
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: 140,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              scrollDirection: Axis.horizontal,
-              itemCount: forecast.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final fcDay = forecast[index];
-                final iconUrl = fcDay.day.condition.icon.startsWith('http')
-                    ? fcDay.day.condition.icon
-                    : 'https:${fcDay.day.condition.icon}';
-                return Container(
-                  width: 110,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade50, Colors.blue.shade100],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(15),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+    return Padding(
+      padding: const EdgeInsets.only(top: 25, right: 8, left: 8),
+      child: CustomScrollView(
+        slivers: [
+          WeatherSliverAppBar(weather: weather),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 140,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                scrollDirection: Axis.horizontal,
+                itemCount: forecast.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final fcDay = forecast[index];
+                  final date = DateTime.parse(fcDay.date);
+                  final weekday = DateFormat.EEEE().format(date);
+                  final iconUrl = fcDay.day.condition.icon.startsWith('http')
+                      ? fcDay.day.condition.icon
+                      : 'https:${fcDay.day.condition.icon}';
+                  return Container(
+                    width: 110,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blue.shade50, Colors.blue.shade100],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ],
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      openForecastDay(fcDay);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            fcDay.date,
-                            style: Theme.of(context).textTheme.bodySmall,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 6),
-                          SizedBox(
-                            width: 48,
-                            height: 48,
-                            child: Image.network(
-                              iconUrl,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => Icon(
-                                Icons.cloud_outlined,
-                                color: Colors.blue.shade300,
-                                size: 40,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(15),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () {
+                        openForecastDay(fcDay);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              weekday,
+                              style: Theme.of(context).textTheme.bodySmall,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 6),
+                            SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: Image.network(
+                                iconUrl,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.cloud_outlined,
+                                  color: Colors.blue.shade300,
+                                  size: 40,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${fcDay.day.maxTempC}° / ${fcDay.day.minTempC}°',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            Text(
+                              '${fcDay.day.maxTempC}° / ${fcDay.day.minTempC}°',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
-        ),
-        SliverTwoGrids(
-          detailsList: currentDetails,
-          titleList: currentTitle,
-          gridCount: 2,
-          iconsList: icon,
-        ),
-      ],
+          SliverTwoGrids(
+            detailsList: currentDetails,
+            titleList: currentTitle,
+            gridCount: 2,
+            iconsList: icon,
+          ),
+        ],
+      ),
     );
   }
 }

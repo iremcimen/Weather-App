@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weather_app/providers/favorites_provider.dart';
 import 'package:weather_app/providers/weather_provider.dart';
+import 'package:weather_app/services/bottomsheet_service.dart';
 import 'package:weather_app/widgets/fav_bottomsheet.dart';
 import 'package:weather_app/widgets/sliver_one_grid.dart';
 
@@ -14,6 +15,7 @@ class WeatherForm extends ConsumerWidget {
     final cityController = ref.watch(citySearchControllerProvider);
     final formKey = GlobalKey<FormState>();
     final favoriteCities = ref.watch(favoriteCitiesProvider);
+    final isFavorite = favoriteCities.contains(cityQuery);
 
     void openFavBottomSheet() {
       showModalBottomSheet(
@@ -36,22 +38,38 @@ class WeatherForm extends ConsumerWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(top: 25),
+      padding: const EdgeInsets.only(top: 30),
       child: Form(
         key: formKey,
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withAlpha(230),
+                      Colors.blue.shade50.withAlpha(230),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blueGrey.shade200.withAlpha(50),
+                      blurRadius: 18,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 10,
+                    vertical: 14,
+                    horizontal: 16,
                   ),
                   child: Row(
                     children: [
@@ -63,6 +81,7 @@ class WeatherForm extends ConsumerWidget {
                               final query = cityController.text.trim();
                               ref.read(cityQueryProvider.notifier).state =
                                   query;
+                              openFavBottomSheet();
                             }
                           },
                           controller: cityController,
@@ -72,48 +91,84 @@ class WeatherForm extends ConsumerWidget {
                             }
                             return null;
                           },
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.blue.shade700,
+                              ),
                           decoration: InputDecoration(
                             isDense: true,
                             filled: true,
-                            fillColor: Theme.of(context).colorScheme.surface,
-                            prefixIcon: const Icon(Icons.location_city),
+                            fillColor: Colors.white.withAlpha(250),
+                            prefixIcon: const Icon(
+                              Icons.location_city,
+                              color: Colors.blueAccent,
+                            ),
                             hintText: 'Search city',
+                            hintStyle: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Colors.blueGrey.shade400,
+                                  fontWeight: FontWeight.w400,
+                                ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                              vertical: 14,
-                              horizontal: 12,
+                              vertical: 16,
+                              horizontal: 14,
                             ),
                             suffixIcon: cityController.text.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(Icons.clear),
+                                    icon: const Icon(
+                                      Icons.clear,
+                                      color: Colors.redAccent,
+                                    ),
                                     onPressed: () => cityController.clear(),
                                   )
                                 : null,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            final query = cityController.text.trim();
-                            ref.read(cityQueryProvider.notifier).state = query;
-                            openFavBottomSheet();
-                          }
-                        },
-                        icon: const Icon(Icons.search),
-                        label: const Text('Search'),
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 14,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      const SizedBox(width: 10),
+                      Material(
+                        color: Colors.deepOrangeAccent,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          splashColor: Colors.orangeAccent.withAlpha(50),
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              final query = cityController.text.trim();
+                              ref.read(cityQueryProvider.notifier).state =
+                                  query;
+                              openFavBottomSheet();
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 14,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Search',
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -133,9 +188,14 @@ class WeatherForm extends ConsumerWidget {
                       return weatherAsync.when(
                         data: (weather) {
                           final favDetailsList = [
-                            weather?.current.tempC.toString(),
                             weather?.location.name.toString(),
+                            '${weather?.current.tempC.toString()}°C',
                             weather?.current.condition.text.toString(),
+                          ];
+                          final favTitleList = [
+                            'City:',
+                            'Temperature:',
+                            'Condition:',
                           ];
                           if (weather == null) {
                             return SliverToBoxAdapter(
@@ -157,8 +217,38 @@ class WeatherForm extends ConsumerWidget {
                             );
                           }
                           return SliverOneGrid(
+                            onTap: () {
+                              ref
+                                  .read(bottomSheetProvider)
+                                  .openForecastDay(
+                                    context,
+                                    weather.forecast.forecastday.first,
+                                  );
+                            },
+                            titleList: favTitleList,
                             detailsList: favDetailsList,
-                            url: weather.current.condition.text,
+                            url:
+                                weather.current.condition.icon.startsWith(
+                                  'http',
+                                )
+                                ? weather.current.condition.icon
+                                : 'https:${weather.current.condition.icon}',
+                            textButton: TextButton(
+                              key: ValueKey('fav-btn-$city'),
+                              onPressed: () {
+                                ref
+                                    .read(favoriteCitiesProvider.notifier)
+                                    .toggleCityFavoriteStatus(city);
+                              },
+                              child: Text(
+                                "Remove",
+                                style: Theme.of(context).textTheme.titleSmall!
+                                    .copyWith(
+                                      color: Colors.blueAccent,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ),
                           );
                         },
                         error: (err, stack) => SliverToBoxAdapter(
@@ -189,7 +279,7 @@ class WeatherForm extends ConsumerWidget {
                           child: Center(child: CircularProgressIndicator()),
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),

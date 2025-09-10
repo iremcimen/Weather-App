@@ -22,7 +22,7 @@ class Home extends ConsumerWidget {
           loading: () => Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(
             child: Text(
-              'Hava durumu alınamadı: $err',
+              'Failed to fetch weather: $err',
               style: TextStyle(color: Colors.red),
             ),
           ),
@@ -31,7 +31,7 @@ class Home extends ConsumerWidget {
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, stack) => Center(
         child: Text(
-          'Konum alınamadı: $err',
+          'Failed to get location: $err',
           style: TextStyle(color: Colors.red),
         ),
       ),
