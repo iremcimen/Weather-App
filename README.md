@@ -34,10 +34,6 @@ A visually stunning, modern Flutter application for real-time weather forecastin
 - *Error & Loading States:* Animated, themed feedback for loading, errors, and empty states.
 - *Accessibility:* Large fonts, high contrast, and responsive design for all devices.
 
-## Screenshots
-
-> Add screenshots here to showcase the UI and features.
-
 ## Technologies Used
 
 - *Flutter* (Material 3, Riverpod)
@@ -46,7 +42,6 @@ A visually stunning, modern Flutter application for real-time weather forecastin
 - *Custom Widgets* (WeatherCityItem, SliverOneGrid, SliverTwoGrid, WeatherSliverAppbar, ForecastdayBottomsheet, FavBottomsheet)
 
 ## Folder Structure
-
 
 lib/
   main.dart
@@ -63,7 +58,7 @@ assets/
 
 1. Clone the repository:
    sh
-   git clone https://github.com/YunusMutlu/weather_App.git
+   git clone https://github.com/iremcimen/Weather-App.git
    
 2. Install dependencies:
    sh
@@ -82,9 +77,5 @@ assets/
 
 ## Credits
 
-- Weather data powered by your chosen API (add details here).
+- Weather data powered by your chosen API.
 - UI/UX inspired by modern design trends.
-
-## License
-
-MIT
